@@ -7,7 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 
@@ -21,7 +24,7 @@ public class WebSecurityConfig  {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/students/**").authenticated()
+                .requestMatchers("/api/students/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
@@ -29,10 +32,14 @@ public class WebSecurityConfig  {
         return http.build();
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("navin").password("{noop}navin22").roles("USER");
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails user = User
+                .withUsername("navin")
+                .password("{noop}navin22")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
     }
 
 }
